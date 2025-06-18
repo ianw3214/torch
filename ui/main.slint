@@ -1,9 +1,15 @@
+import { ListView } from "std-widgets.slint";
+
 export component MainWindow inherits Window {
     width : 300px;
     height : 200px;
-    Text {
-        text : "Hello slint!";
-        horizontal-alignment:  center;
-        vertical-alignment: center;
+    title : "Torch Asset Manager";
+
+    in property <[string]> folders;
+    
+    ListView {
+        for folder in folders : Text {
+            text : folder;
+        }
     }
 }
