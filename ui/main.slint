@@ -1,15 +1,34 @@
 import { ListView } from "std-widgets.slint";
 
+export struct FolderItem {
+    name : string,
+    depth : int,
+    is_folder : bool,
+    is_expanded : bool
+}
+
 export component MainWindow inherits Window {
-    width : 300px;
-    height : 200px;
+    width : 400px;
+    height : 400px;
     title : "Torch Asset Manager";
 
-    in property <[string]> folders;
+    in property <[FolderItem]> folders;
     
     ListView {
-        for folder in folders : Text {
-            text : folder;
+        for item in folders : HorizontalLayout {
+            spacing : 8px;
+            height : 30px;
+
+            Rectangle {
+                width : item.depth * 16px;  // Identation space
+                height : 1px;
+                opacity : 0;
+            }
+
+            Text {
+                text : item.is_folder ? "📁 " + item.name : "📄 " + item.name;
+                font-family : "monospace";
+            }
         }
     }
 }
