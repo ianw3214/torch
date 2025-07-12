@@ -13,9 +13,10 @@ export component MainWindow inherits Window {
     title : "Torch Asset Manager";
 
     in property <[FolderItem]> folders;
+    callback folder_clicked(index: int);
     
     ListView {
-        for item in folders : HorizontalLayout {
+        for item[i] in folders : HorizontalLayout {
             spacing : 8px;
             height : 30px;
 
@@ -26,6 +27,11 @@ export component MainWindow inherits Window {
             }
 
             Text {
+                TouchArea {
+                    width: parent.width;
+                    height: parent.height;
+                    clicked => { folder_clicked(i); }
+                }
                 text : item.is_folder ? "📁 " + item.name : "📄 " + item.name;
                 font-family : "monospace";
             }
