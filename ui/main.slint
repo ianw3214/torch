@@ -13,27 +13,37 @@ export component MainWindow inherits Window {
     title : "Torch Asset Manager";
 
     in property <[FolderItem]> folders;
+    in property <int> selected_index;
+
     callback folder_clicked(index: int);
     
     ListView {
-        for item[i] in folders : HorizontalLayout {
-            spacing : 8px;
+        for item[i] in folders : Rectangle {
+            width : 100%;
             height : 30px;
+            background : i == selected_index ? #4040a0 : transparent;
 
-            Rectangle {
-                width : item.depth * 16px;  // Identation space
-                height : 1px;
-                opacity : 0;
-            }
+            HorizontalLayout {
+                spacing : 8px;
+                width : parent.width;
+                height : parent.height;
 
-            Text {
-                TouchArea {
-                    width: parent.width;
-                    height: parent.height;
-                    clicked => { folder_clicked(i); }
+                Rectangle {
+                    width : item.depth * 16px;  // Identation space
+                    height : 1px;
+                    opacity : 0;
                 }
-                text : item.is_folder ? "📁 " + item.name : "📄 " + item.name;
-                font-family : "monospace";
+
+                Text {
+                    TouchArea {
+                        width: parent.width;
+                        height: parent.height;
+                        clicked => { folder_clicked(i); }
+                    }
+                    text : item.is_folder ? "📁 " + item.name : "📄 " + item.name;
+                    font-family : "monospace";
+                    color : i == selected_index ? white : black;
+                }
             }
         }
     }

@@ -69,34 +69,9 @@ fn toggle_folder_expansion(nodes: &mut [TreeNode], name: &str) -> bool {
     false
 }
 
-// fn build_folder_items(path : &std::path::Path, depth : i32) -> Vec<FolderItem> {
-//     let mut items = Vec::new();
-
-//     if let Ok(entries) = std::fs::read_dir(path) {
-//         let mut entries = entries.filter_map(Result::ok).collect::<Vec<_>>();
-//         entries.sort_by_key(|e| e.file_name());
-//         for entry in entries {
-//             let path = entry.path();
-//             let is_folder = path.is_dir();
-//             items.push(FolderItem {
-//                 // TODO: using to_string_lossy might result in less errors
-//                 name: entry.file_name().into_string().unwrap().into(),
-//                 depth,
-//                 is_folder,
-//                 is_expanded : false
-//             });
-            
-//             if is_folder {
-//                 items.extend(build_folder_items(&path, depth + 1));
-//             }
-//         }
-//     }
-
-//     items
-// }
-
 fn main() -> Result<(), slint::PlatformError> {
     let main_window = MainWindow::new()?;
+    let main_window_weak = main_window.as_weak();
 
     // TODO: Replace path w/ project path
     let path = std::path::Path::new("./");
@@ -104,12 +79,17 @@ fn main() -> Result<(), slint::PlatformError> {
     let mut tree = build_tree(path);
     let model_data = flatten_visible_tree(&tree, 0);
 
-    // let model = ModelRc::new(VecModel::from(model_data));
     let vec_model = Rc::new(VecModel::from(model_data));
     let model_rc = ModelRc::from(vec_model.clone());
     main_window.set_folders(model_rc);
 
+    main_window.set_selected_index(-1);
+
     main_window.on_folder_clicked(move |index| {
+        // Selection logic
+        main_window_weak.unwrap().set_selected_index(index);
+        
+        // Expand/collapse logic
         let vec_model = vec_model.clone();
         let row = vec_model.row_data(index as usize);
         if let Some(item) = row {
