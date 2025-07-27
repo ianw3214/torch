@@ -70,37 +70,39 @@ export component MainWindow inherits Window {
 
         // Right panel
         Rectangle {
-            // width : 1fr;
             height : parent.height;
             padding : 16px;
             background : #f0f0f0;
 
             VerticalLayout {
-                spacing : 8px;
+                spacing : 0px;
 
                 Text {
+                    height : 30px;
                     text : "Selected item";
                     font-size: 18px;
-                    // font-weight: bold;
+                    font-weight: 500;
                 }
 
                 Text {
+                    height : 20px;
                     text : "Name:" + preview_name;
                 }
 
                 Text {
+                    height : 20px;
                     text : "Path: " + preview_path;
-                    // wrap : word;
+                    wrap : word-wrap;
                 }
 
                 Text {
+                    height : 20px;
                     text: "Type: " + preview_type;
                 }
 
                 // Placeholder for image/text previews later
                 Rectangle {
-                    width : 100%;
-                    height : 200px;
+                    height : 300px;
                     background : #ddd;
                     border-radius:  4px;
 
@@ -109,6 +111,9 @@ export component MainWindow inherits Window {
                         vertical-alignment: center;
                         horizontal-alignment: center;
                         color: #666;
+
+                        width : parent.width;
+                        height : parent.height;
                     }
                 }
             }
