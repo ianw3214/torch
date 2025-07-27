@@ -4,45 +4,112 @@ export struct FolderItem {
     name : string,
     depth : int,
     is_folder : bool,
-    is_expanded : bool
+    is_expanded : bool,
+    full_path : string
 }
 
 export component MainWindow inherits Window {
-    width : 400px;
-    height : 400px;
+    width : 700px;
+    height : 500px;
     title : "Torch Asset Manager";
 
     in property <[FolderItem]> folders;
     in property <int> selected_index;
+    in property <string> preview_name;
+    in property <string> preview_path;
+    in property <string> preview_type;
 
     callback folder_clicked(index: int);
     
-    ListView {
-        for item[i] in folders : Rectangle {
-            width : 100%;
-            height : 30px;
-            background : i == selected_index ? #4040a0 : transparent;
+    HorizontalLayout {
+        spacing : 0px;
 
-            HorizontalLayout {
+        // Left panel
+        Rectangle {
+            width : 300px;
+            height : parent.height;
+
+            ListView {
+                for item[i] in folders : Rectangle {
+                    width : 100%;
+                    height : 30px;
+                    background : i == selected_index ? #4040a0 : transparent;
+
+                    HorizontalLayout {
+                        spacing : 8px;
+                        width : parent.width;
+                        height : parent.height;
+
+                        Rectangle {
+                            width : item.depth * 16px;  // Identation space
+                            height : 1px;
+                            opacity : 0;
+                        }
+
+                        Text {
+                            TouchArea {
+                                width: parent.width;
+                                height: parent.height;
+                                clicked => { folder_clicked(i); }
+                            }
+                            text : item.is_folder ? "📁 " + item.name : "📄 " + item.name;
+                            font-family : "monospace";
+                            color : i == selected_index ? white : black;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Middle spacing
+        Rectangle {
+            width : 1px;
+            height : parent.height;
+            background : #888;
+        }
+
+        // Right panel
+        Rectangle {
+            // width : 1fr;
+            height : parent.height;
+            padding : 16px;
+            background : #f0f0f0;
+
+            VerticalLayout {
                 spacing : 8px;
-                width : parent.width;
-                height : parent.height;
 
-                Rectangle {
-                    width : item.depth * 16px;  // Identation space
-                    height : 1px;
-                    opacity : 0;
+                Text {
+                    text : "Selected item";
+                    font-size: 18px;
+                    // font-weight: bold;
                 }
 
                 Text {
-                    TouchArea {
-                        width: parent.width;
-                        height: parent.height;
-                        clicked => { folder_clicked(i); }
+                    text : "Name:" + preview_name;
+                }
+
+                Text {
+                    text : "Path: " + preview_path;
+                    // wrap : word;
+                }
+
+                Text {
+                    text: "Type: " + preview_type;
+                }
+
+                // Placeholder for image/text previews later
+                Rectangle {
+                    width : 100%;
+                    height : 200px;
+                    background : #ddd;
+                    border-radius:  4px;
+
+                    Text {
+                        text: "Preview content here...";
+                        vertical-alignment: center;
+                        horizontal-alignment: center;
+                        color: #666;
                     }
-                    text : item.is_folder ? "📁 " + item.name : "📄 " + item.name;
-                    font-family : "monospace";
-                    color : i == selected_index ? white : black;
                 }
             }
         }

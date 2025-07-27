@@ -46,7 +46,12 @@ fn build_tree(path : &std::path::Path) -> Vec<TreeNode> {
             };
 
             result.push(TreeNode {
-                item : FolderItem { depth: 0, is_expanded: false, is_folder: is_folder, name: name },
+                item : FolderItem { 
+                    depth: 0, 
+                    is_expanded: false, 
+                    is_folder: is_folder, 
+                    name: name,
+                    full_path: path.into_os_string().into_string().unwrap().into() },
                 children
             });
         }
@@ -93,6 +98,11 @@ fn main() -> Result<(), slint::PlatformError> {
         let vec_model = vec_model.clone();
         let row = vec_model.row_data(index as usize);
         if let Some(item) = row {
+            // Set preview info
+            main_window_weak.unwrap().set_preview_name(item.name.clone());
+            main_window_weak.unwrap().set_preview_path(item.full_path.clone());
+            main_window_weak.unwrap().set_preview_type(if item.is_folder { "Folder".into() } else { "File".into() });
+
             // Toggle expanded flag in full tree
             if toggle_folder_expansion(&mut tree, &item.name) {
                 let updated = flatten_visible_tree(&tree, 0);
