@@ -74,6 +74,13 @@ fn toggle_folder_expansion(nodes: &mut [TreeNode], name: &str) -> bool {
     false
 }
 
+fn is_text_file(path: &std::path::Path) -> bool {
+    matches!(
+        path.extension().and_then(|s| s.to_str()),
+        Some("txt" | "json" | "md" | "toml")
+    )
+}
+
 fn main() -> Result<(), slint::PlatformError> {
     let main_window = MainWindow::new()?;
     let main_window_weak = main_window.as_weak();
@@ -102,6 +109,29 @@ fn main() -> Result<(), slint::PlatformError> {
             main_window_weak.unwrap().set_preview_name(item.name.clone());
             main_window_weak.unwrap().set_preview_path(item.full_path.clone());
             main_window_weak.unwrap().set_preview_type(if item.is_folder { "Folder".into() } else { "File".into() });
+            if !item.is_folder && is_text_file(std::path::Path::new(item.full_path.as_str()))
+            {
+                match std::fs::read_to_string(item.full_path.as_str())
+                {
+                    Ok(contents) => {
+                        let truncated = if contents.len() > 200 {
+                            format!("{}\n\n[... truncated]", &contents[..200])
+                        }
+                        else
+                        {
+                            contents
+                        };
+                        main_window_weak.unwrap().set_preview_contents(truncated.into());
+                    }
+                    Err(err) => {
+                        main_window_weak.unwrap().set_preview_contents(format!("Failed to read file: {}", err).into());
+                    }
+                }
+            }
+            else
+            {
+                main_window_weak.unwrap().set_preview_contents("".into());
+            }
 
             // Toggle expanded flag in full tree
             if toggle_folder_expansion(&mut tree, &item.name) {
