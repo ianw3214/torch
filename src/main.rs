@@ -85,8 +85,13 @@ fn main() -> Result<(), slint::PlatformError> {
     let main_window = MainWindow::new()?;
     let main_window_weak = main_window.as_weak();
 
+    // Load in config from file
+    // TODO: Probably want to use formatted file type (JSON, YAML, etc)
+    let config_raw = std::fs::read_to_string("config.txt");
+    let root_path = config_raw.unwrap();
+
     // TODO: Replace path w/ project path
-    let path = std::path::Path::new("./");
+    let path = std::path::Path::new(&root_path);
     // let items = build_folder_items(path, 0);
     let mut tree = build_tree(path);
     let model_data = flatten_visible_tree(&tree, 0);
